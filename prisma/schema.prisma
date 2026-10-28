@@ -1,0 +1,130 @@
+// FreshMart Prisma Schema for SQLite (Live Environment)
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  name         String
+  passwordHash String
+  role         String   @default("CUSTOMER") // "CUSTOMER" | "ADMIN"
+  phone        String?
+  address      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  cart   Cart?
+  orders Order[]
+}
+
+model Category {
+  id          Int       @id @default(autoincrement())
+  name        String
+  slug        String    @unique
+  description String?
+  imageUrl    String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  products    Product[]
+}
+
+model Product {
+  id                Int       @id @default(autoincrement())
+  name              String
+  slug              String    @unique
+  sku               String    @unique
+  description       String
+  price             Float
+  promotionalPrice  Float?
+  unit              String    // e.g. "per kg", "per bunch", "per pack", "per bottle"
+  stockQuantity     Int       @default(0)
+  lowStockThreshold Int       @default(10)
+  imageUrl          String
+  isActive          Boolean   @default(true)
+  isFeatured        Boolean   @default(false)
+  categoryId        Int
+  category          Category  @relation(fields: [categoryId], references: [id])
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  cartItems          CartItem[]
+  orderItems         OrderItem[]
+  inventoryMovements InventoryMovement[]
+}
+
+model Cart {
+  id        Int        @id @default(autoincrement())
+  userId    Int        @unique
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  items     CartItem[]
+}
+
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  cartId    Int
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cartId, productId])
+}
+
+model Order {
+  id              Int         @id @default(autoincrement())
+  orderNumber     String      @unique
+  userId          Int
+  user            User        @relation(fields: [userId], references: [id])
+  status          String      @default("PENDING") // PENDING, CONFIRMED, PREPARING, OUT_FOR_DELIVERY, DELIVERED, CANCELLED
+  paymentMethod   String      @default("CASH_ON_DELIVERY") // CASH_ON_DELIVERY, MOCK_PAYMENT
+  paymentStatus   String      @default("PENDING") // PENDING, COMPLETED, FAILED
+  subtotal        Float
+  deliveryFee     Float       @default(0)
+  totalAmount     Float
+  deliveryName    String
+  deliveryPhone   String
+  deliveryAddress String
+  deliveryNotes   String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  items           OrderItem[]
+}
+
+model OrderItem {
+  id                  Int      @id @default(autoincrement())
+  orderId             Int
+  order               Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId           Int
+  product             Product  @relation(fields: [productId], references: [id])
+  productNameSnapshot String
+  unitPriceSnapshot   Float
+  quantity            Int
+  subtotal            Float
+}
+
+model InventoryMovement {
+  id             Int      @id @default(autoincrement())
+  productId      Int
+  product        Product  @relation(fields: [productId], references: [id])
+  changeQuantity Int      // positive for restock, negative for deduction
+  reason         String   // "ORDER_FULFILLMENT", "RESTOCK", "MANUAL_ADJUSTMENT", "ORDER_CANCELLATION"
+  adminUserId    Int?
+  createdAt      DateTime @default(now())
+}
+
+model StoreSetting {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}

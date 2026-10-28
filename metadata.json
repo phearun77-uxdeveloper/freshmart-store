@@ -1,0 +1,6 @@
+{
+  "name": "FreshMart - Online Supermarket",
+  "description": "Full-stack online supermarket e-commerce platform with real-time inventory, Cash on Delivery checkout, and admin dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

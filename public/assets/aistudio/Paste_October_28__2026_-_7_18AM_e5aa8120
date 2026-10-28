@@ -1,0 +1,735 @@
+# Project: FreshMart — Full-Stack Online Supermarket E-Commerce Platform
+
+Act as a senior full-stack JavaScript engineer, software architect, database designer, UI/UX designer, security engineer, and patient programming mentor.
+
+Build a real, functional, professional Online Supermarket E-Commerce web application named **FreshMart** in my currently open Antigravity workspace.
+
+I am a beginner learning full-stack web development. Build the application with clean architecture, readable code, practical explanations, and working features. Do not create only a UI mockup or a collection of nonfunctional pages.
+
+Use the following technology stack.
+
+## 1. Required Technology Stack
+
+### Frontend
+- JavaScript (ES6+), not TypeScript
+- React.js
+- Vite
+- Tailwind CSS
+- React Router for navigation
+- Lucide React for icons
+- React Context API for shared authentication and shopping cart state
+- Native Fetch API for HTTP requests
+
+### Backend
+- Node.js
+- Express.js
+- JavaScript ES modules where appropriate
+- RESTful API architecture
+- Prisma ORM using PostgreSQL
+- Zod for request validation
+- bcrypt for password hashing
+- JWT stored in secure HTTP-only cookies for authentication
+- Helmet, rate limiting, and appropriately configured CORS
+
+### Database
+- PostgreSQL
+- Prisma schema and database migrations
+- Seed script for sample categories, products, and an initial administrator
+
+### Development tools
+- npm
+- Git-friendly project structure
+- Environment variables using `.env`
+- ESLint or other appropriate lightweight linting tools
+
+Before installing packages, inspect my operating system, installed Node.js/npm versions, and existing project files. Check current official documentation for compatible versions and setup commands. Prefer stable, supported releases rather than release candidates unless necessary and justified. Ensure the selected versions work on my macOS Monterey 12.7.6 machine.
+
+Do not silently upgrade system software, delete existing work, expose credentials, or deploy publicly. Explain any required system-level installation before asking me to perform it.
+
+## 2. Product Vision
+
+FreshMart is an online supermarket where customers can browse grocery products, search for items, add products to a shopping cart, place orders, and track delivery progress.
+
+Administrators can manage products, categories, inventory, customers, and orders through a separate dashboard.
+
+The design should feel like a modern, trustworthy online grocery store.
+
+### Visual direction
+- Clean, contemporary supermarket branding
+- Primary color: fresh green
+- Secondary accent: warm yellow or orange
+- White backgrounds with subtle neutral surfaces
+- Rounded cards, restrained shadows, and consistent spacing
+- Professional typography and clear visual hierarchy
+- High-quality grocery product imagery
+- Responsive layouts for desktop, tablet, and mobile
+- Accessible contrast, visible focus states, and clear feedback
+- Subtle animations without sacrificing performance
+
+Use a reusable design system with consistent colors, spacing, typography, buttons, input fields, badges, cards, and modal dialogs.
+
+Avoid excessive gradients, unnecessary animations, and oversized decorative elements.
+
+## 3. Project Architecture
+
+Organize the project using separate frontend and backend applications.
+
+Use a structure similar to:
+
+FreshMart/
+├── client/
+│   ├── public/
+│   ├── src/
+│   │   ├── assets/
+│   │   ├── components/
+│   │   ├── layouts/
+│   │   ├── pages/
+│   │   ├── context/
+│   │   ├── hooks/
+│   │   ├── services/
+│   │   ├── utils/
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   ├── .env.example
+│   └── package.json
+├── server/
+│   ├── prisma/
+│   │   ├── schema.prisma
+│   │   ├── migrations/
+│   │   └── seed.js
+│   ├── src/
+│   │   ├── config/
+│   │   ├── controllers/
+│   │   ├── routes/
+│   │   ├── middleware/
+│   │   ├── services/
+│   │   ├── validators/
+│   │   ├── utils/
+│   │   ├── app.js
+│   │   └── server.js
+│   ├── .env.example
+│   └── package.json
+├── .gitignore
+├── README.md
+└── package.json
+
+You may adjust the structure when necessary, but keep frontend, backend, database, and reusable logic clearly separated.
+
+Create shared root scripts where practical so I can run the frontend and backend conveniently during development.
+
+## 4. Customer-Facing Storefront
+
+Build a complete customer shopping experience with the following pages.
+
+### A. Home Page
+
+Include:
+- Responsive header with logo, navigation, search, account, and cart
+- Attractive grocery-themed hero section
+- Shop by category
+- Featured products
+- Best-selling or popular products
+- Special offers and promotions
+- Seasonal grocery recommendations
+- Benefits such as fresh products and convenient delivery
+- Footer with contact details, useful links, and store policies
+
+All product data should come from the backend API. Avoid hardcoding product listings in React components.
+
+### B. Product Catalog
+
+Create a product listing page with:
+- Responsive product grid
+- Product image
+- Product name and category
+- Price and unit, such as per kg, per litre, or per pack
+- Stock availability
+- Discount or promotional price when applicable
+- Add-to-cart button
+- Product detail navigation
+- Search by product name
+- Category filtering
+- Price-range filtering
+- In-stock filtering
+- Sorting by name, price, and newest products
+- Pagination or a suitable load-more pattern
+- Loading skeletons, empty states, and error messages
+
+Search and filter state should work correctly together.
+
+### C. Product Details
+
+Display:
+- Product image gallery or primary image
+- Name and description
+- Price and unit
+- Category
+- Stock availability
+- Quantity selector
+- Add-to-cart button
+- Related products
+
+Prevent customers from selecting quantities above available stock.
+
+### D. Shopping Cart
+
+Implement a working shopping cart with:
+- Product image, name, price, and quantity
+- Increase and decrease quantity
+- Remove an item
+- Clear cart with confirmation
+- Subtotal calculation
+- Delivery fee calculation
+- Promotion or discount display when supported
+- Total amount
+- Continue shopping
+- Proceed to checkout
+
+Recalculate prices using trusted backend data. Never trust totals or product prices submitted by the browser.
+
+Support guest browsing and a guest cart. Persist authenticated customers' carts in PostgreSQL. Merge the guest cart into the customer's account after login without duplicating items or exceeding stock.
+
+### E. Customer Authentication
+
+Implement:
+- Registration
+- Login
+- Logout
+- Current user profile
+- Protected customer routes
+- Password validation
+- Clear validation and error messages
+
+Use bcrypt to hash passwords. Store only password hashes in PostgreSQL.
+
+Use appropriately configured HTTP-only cookies for JWT authentication. Set secure cookie options in production, configure credentialed CORS correctly, validate request origins for state-changing requests, and use an appropriate CSRF defense.
+
+Never store passwords, JWT secrets, or database credentials in frontend code or public repositories.
+
+Public registration must always create a customer role. Customers must not be able to promote themselves to administrators.
+
+### F. Checkout
+
+Implement a working checkout flow containing:
+- Customer name
+- Contact phone
+- Delivery address
+- Delivery notes
+- Order summary
+- Delivery fee
+- Final total
+- Payment method selection
+
+Support Cash on Delivery as the first real-world-oriented payment method. A clearly labeled mock payment method may be included for development demonstrations.
+
+Do not pretend that a mock payment is a real payment. Do not collect or store credit card numbers.
+
+Require customers to authenticate before placing an order. Validate all checkout fields on the backend.
+
+At order placement:
+1. Load the current product prices and stock from PostgreSQL.
+2. Verify that the cart is not empty.
+3. Verify that every requested quantity is available.
+4. Calculate the authoritative order subtotal, delivery fee, and total.
+5. Create the order and order items using a PostgreSQL transaction.
+6. Decrease the appropriate stock quantities atomically.
+7. Save the customer's delivery information and order details.
+8. Clear the customer's cart after a successful order.
+9. Return a confirmation with the order number.
+
+If stock changes during checkout, fail safely and explain which products need attention. A failed checkout must not create a partial order or leave stock quantities incorrectly updated.
+
+Store order-item price and product-name snapshots so that past orders remain accurate when product details change.
+
+### G. Customer Order History
+
+Customers should be able to:
+- View their past orders
+- Open order details
+- See purchased products, quantities, and prices
+- View payment method and order status
+- See the delivery address used for an order
+
+Only the owner of an order may access its details.
+
+Provide a clear status timeline with statuses such as:
+- Pending
+- Confirmed
+- Preparing
+- Out for Delivery
+- Delivered
+- Cancelled
+
+Enforce valid status transitions in the backend.
+
+## 5. Admin Dashboard
+
+Create a separate admin layout with a sidebar, header, main content area, responsive navigation, and a professional administrative design.
+
+Only authorized administrators can access admin pages and API endpoints.
+
+### A. Dashboard Overview
+
+Display live statistics calculated from PostgreSQL:
+- Total products
+- Total categories
+- Total customers
+- Total orders
+- Pending orders
+- Low-stock products
+- Total sales from eligible completed orders
+
+Add:
+- Recent orders table
+- Best-selling products
+- Recent sales summary
+- Order status distribution
+- Sales trend chart
+- Low-stock alerts
+
+Do not hardcode dashboard statistics or fabricate sales information. Clearly distinguish sample seeded data from actual customer activity.
+
+### B. Product Management
+
+Implement:
+- Product list
+- Search and category filter
+- Add product
+- Edit product
+- View product details
+- Delete or deactivate a product safely
+- Upload or assign product images
+- Manage SKU
+- Manage category
+- Manage price
+- Manage promotional price
+- Manage unit
+- Manage stock quantity
+- Manage low-stock threshold
+- Manage active or inactive status
+- Mark featured products
+
+Validate all fields on the backend.
+
+SKU values must be unique. Prices and quantities must be valid. Inactive products must not be purchasable.
+
+Prevent unsafe deletion of products referenced by historical orders. Prefer deactivation when preserving order history is necessary.
+
+For the first version, use reliable image URLs with an image fallback. If uploads are implemented, validate permitted file types and sizes, generate safe filenames, and document where uploaded files are stored. Do not introduce unnecessary cloud storage dependencies.
+
+### C. Category Management
+
+Implement:
+- Category listing
+- Create category
+- Edit category
+- Category description
+- Category image
+- Unique slug
+- Active or inactive status
+
+Prevent unsafe deletion of categories that are still assigned to products. Provide a clear explanation and a way to resolve the restriction.
+
+### D. Order Management
+
+Administrators should be able to:
+- View all orders
+- Search by order number or customer
+- Filter by order status and date
+- Open order details
+- View order items and totals
+- Review delivery information
+- Update order status through valid transitions
+- Cancel an eligible order
+- View payment method and payment status
+
+Use server-side authorization on every administrative API endpoint.
+
+Implement inventory restoration for cancellations only when the business rules allow it, and ensure stock restoration cannot occur twice for the same order.
+
+### E. Customer Management
+
+Implement:
+- Customer listing
+- Search customers
+- View customer profile
+- View customer order history
+- Activate or deactivate customer accounts if appropriate
+
+Never display password hashes or confidential authentication information.
+
+Do not allow administrators to see another user's password.
+
+### F. Inventory Management
+
+Provide:
+- Current stock levels
+- Low-stock warnings
+- Stock adjustment with validation
+- Stock movement history
+- Reason for manual adjustments
+
+Store stock adjustment records with product, quantity change, reason, timestamp, and acting administrator when applicable.
+
+Prevent stock from becoming negative.
+
+### G. Admin Settings
+
+Provide basic working settings for:
+- Store name
+- Store contact details
+- Delivery fee
+- Free-delivery threshold
+- Low-stock defaults
+- Store availability
+
+Validate settings and persist them in PostgreSQL. Explain any settings that are deferred to a later version.
+
+## 6. PostgreSQL Database Design
+
+Design a normalized relational schema using Prisma.
+
+Include appropriate models for:
+- User
+- Category
+- Product
+- Cart
+- CartItem
+- Order
+- OrderItem
+- InventoryMovement
+- StoreSetting, or an equivalent settings model
+
+Use enums where appropriate for role, order status, and payment status.
+
+Relationships must use appropriate primary keys, foreign keys, unique constraints, indexes, and deletion policies.
+
+Requirements:
+- Unique user email
+- Unique product SKU
+- Unique product slug
+- Unique category slug
+- Unique order number
+- A single active cart per authenticated customer
+- A unique product entry per cart
+- Valid product and category relationships
+- Appropriate createdAt and updatedAt fields
+- Historical order items preserved even when a product changes
+- Correct decimal monetary storage and calculations
+- Database transactions for checkout and stock adjustments
+
+Use PostgreSQL Decimal or another appropriate precise monetary representation. Never use floating-point arithmetic as the authoritative method for calculating money.
+
+Use database constraints and transactional business logic instead of relying only on frontend validation.
+
+Generate and apply Prisma migrations using documented, supported commands. Do not use destructive database resets on an existing database.
+
+## 7. REST API Design
+
+Use a consistent API prefix such as `/api`.
+
+Implement logically separated routes, controllers, services, validation schemas, and middleware.
+
+Example endpoints:
+
+Authentication:
+- POST `/api/auth/register`
+- POST `/api/auth/login`
+- POST `/api/auth/logout`
+- GET `/api/auth/me`
+
+Products:
+- GET `/api/products`
+- GET `/api/products/:id`
+- GET `/api/products/slug/:slug`
+- POST `/api/products`
+- PATCH `/api/products/:id`
+- DELETE `/api/products/:id`
+
+Categories:
+- GET `/api/categories`
+- GET `/api/categories/:id`
+- POST `/api/categories`
+- PATCH `/api/categories/:id`
+- DELETE `/api/categories/:id`
+
+Cart:
+- GET `/api/cart`
+- POST `/api/cart/items`
+- PATCH `/api/cart/items/:id`
+- DELETE `/api/cart/items/:id`
+- DELETE `/api/cart`
+
+Orders:
+- POST `/api/orders`
+- GET `/api/orders/my`
+- GET `/api/orders/:id`
+
+Admin:
+- GET `/api/admin/dashboard`
+- GET `/api/admin/orders`
+- PATCH `/api/admin/orders/:id/status`
+- GET `/api/admin/customers`
+- GET `/api/admin/inventory`
+- POST `/api/admin/inventory/adjustments`
+- GET `/api/admin/settings`
+- PATCH `/api/admin/settings`
+
+Adjust routes as necessary, including a suitable endpoint for product search and pagination.
+
+For each route, implement appropriate authentication, role checks, request validation, business logic, and consistent error responses.
+
+Public users must not be able to call administrative endpoints successfully.
+
+Return appropriate HTTP status codes, including 400 for invalid requests, 401 for unauthenticated requests, 403 for unauthorized access, 404 for missing resources, 409 for relevant conflicts, and 500 for unexpected server errors.
+
+Do not expose stack traces, SQL internals, tokens, or secrets in production error responses.
+
+## 8. Security Requirements
+
+Implement security from the beginning.
+
+- Hash passwords with bcrypt.
+- Protect administrator routes on the server.
+- Validate request parameters, bodies, and query strings.
+- Use safe database queries through the ORM.
+- Configure CORS for the actual frontend origin.
+- Enable credentialed requests only with explicitly trusted origins.
+- Use HTTP-only cookies and appropriate SameSite and Secure settings.
+- Add rate limiting to authentication endpoints.
+- Use Helmet for appropriate HTTP security headers.
+- Prevent users from accessing other customers' carts and orders.
+- Recalculate prices and verify stock on the backend.
+- Enforce valid order status transitions.
+- Avoid mass assignment of sensitive user fields.
+- Keep `.env` files and secrets out of Git.
+- Provide `.env.example` files with placeholders only.
+- Do not put secrets in client-side environment variables.
+- Avoid exposing sensitive information through logs.
+
+Implement practical protections without claiming the application is production-certified or fully secure.
+
+## 9. Sample Data and Initial Administrator
+
+Create a deterministic seed script with realistic supermarket categories and at least 30 sample products.
+
+Example categories:
+- Fruits
+- Vegetables
+- Meat and Seafood
+- Dairy and Eggs
+- Bakery
+- Beverages
+- Snacks
+- Frozen Foods
+- Household Essentials
+- Personal Care
+
+Example products:
+- Apples
+- Bananas
+- Tomatoes
+- Potatoes
+- Onions
+- Fresh Milk
+- Eggs
+- Bread
+- Rice
+- Chicken
+- Fish
+- Bottled Water
+- Juice
+- Coffee
+- Cooking Oil
+- Pasta
+- Soap
+- Laundry Detergent
+
+Include realistic units, prices, stock quantities, descriptions, and suitable images.
+
+The seed script must be safe to rerun without producing duplicate categories and products.
+
+Create the initial administrator using explicitly configured environment variables. Hash the password before saving it. Never commit an administrator password or use a publicly known default password.
+
+Document how to configure the initial administrator and create a customer account.
+
+## 10. Frontend Architecture and State
+
+Use reusable React components rather than one enormous component.
+
+Create appropriate components for:
+- Header
+- Footer
+- ProductCard
+- ProductGrid
+- SearchBar
+- CategoryCard
+- PriceDisplay
+- QuantitySelector
+- CartItem
+- ProtectedRoute
+- AdminRoute
+- LoadingState
+- EmptyState
+- ErrorMessage
+- ConfirmationDialog
+- Form fields and buttons
+- Dashboard metric cards
+- Tables, pagination, and status badges
+
+Use React Router for customer and admin navigation.
+
+Use Context API for global authentication and cart state where appropriate. Keep API calls in a centralized service layer.
+
+Implement reusable form validation and consistent error handling.
+
+Every visible button, form, navigation item, filter, and modal must work as intended. Remove dead links and placeholder actions.
+
+Use semantic HTML, accessible form labels, keyboard-friendly controls, and responsive styling.
+
+Avoid using fabricated data to make broken API calls look successful.
+
+## 11. Environment and Local Setup
+
+Create root, frontend, and backend package configuration as needed.
+
+Provide:
+- Root scripts for convenient local development
+- Frontend development server
+- Backend development server
+- Database migration commands
+- Database seed command
+- Production build command
+- Suitable lint and test commands
+
+Create `.env.example` files documenting every required variable without including real secrets.
+
+Include variables for the PostgreSQL connection string, backend port, frontend origin, JWT secret, cookie configuration, administrator seed credentials, and other necessary server configuration.
+
+Use the Node version and Prisma version compatible with the installed environment, following current official documentation.
+
+Inspect whether PostgreSQL is installed and running. If Docker is available, an optional PostgreSQL Docker Compose setup may be provided. Otherwise, give suitable macOS installation and local database setup instructions without requiring Docker.
+
+Do not invent database credentials or claim the database is connected until the connection has been tested.
+
+If a necessary dependency, database service, or account configuration is unavailable, implement as much as possible and provide precise setup steps for the missing prerequisite.
+
+## 12. Testing and Verification
+
+Do not stop after creating the initial UI. Implement the app, run available checks, and test the important workflows.
+
+At minimum, verify the following where the environment permits:
+
+### Frontend
+- All pages render.
+- Navigation works.
+- Responsive layouts work on mobile and desktop.
+- Search, sorting, and filtering work together.
+- Loading, error, and empty states are handled.
+- Cart quantity changes update totals.
+- Invalid forms display helpful messages.
+
+### Backend
+- Server starts without errors.
+- Database connection succeeds.
+- Product and category APIs work.
+- Registration and login work.
+- Passwords are stored as hashes.
+- Unauthorized users cannot access admin routes.
+- Customers cannot access other customers' orders.
+- Invalid request data is rejected.
+
+### Database and checkout
+- Migrations apply successfully.
+- Seed data can be inserted safely.
+- Product CRUD works.
+- Categories remain consistent with products.
+- Orders and order items are stored correctly.
+- Checkout uses current database prices.
+- Stock cannot be oversold.
+- Checkout transactions handle failures correctly.
+- Customer carts persist across authenticated sessions.
+- Order status and inventory updates remain consistent.
+
+### Build and browser verification
+- Frontend production build succeeds.
+- No unresolved imports or missing files remain.
+- No critical JavaScript console errors occur.
+- Browser tests or API tests run when suitable tools are available.
+
+Fix failures rather than merely listing them. Report honestly which tests actually ran and which could not be performed.
+
+## 13. Documentation
+
+Create a complete beginner-friendly `README.md` containing:
+
+- Project overview and features
+- Architecture explanation
+- Technology stack
+- Folder structure
+- Prerequisites
+- Installation instructions
+- PostgreSQL setup for macOS Monterey
+- Environment configuration
+- Database migration and seeding
+- How to start the frontend and backend
+- How to log in as an administrator
+- How to create a customer account
+- API overview
+- Troubleshooting common errors
+- Testing instructions
+- Current limitations and future enhancements
+
+Explain where each technology fits into the application.
+
+Use commands appropriate for the actual package configuration and installed software. Do not include commands that do not match the project files.
+
+## 14. Implementation Workflow
+
+Work through these milestones in order:
+
+Milestone 1: Inspect the workspace and environment, establish architecture, and scaffold the project.
+
+Milestone 2: Configure PostgreSQL, Prisma, migrations, database models, and seed data.
+
+Milestone 3: Implement Express middleware, authentication, API routes, validation, and database services.
+
+Milestone 4: Implement the React storefront, navigation, catalog, product details, and shopping cart.
+
+Milestone 5: Implement registration, login, checkout, order history, and inventory transactions.
+
+Milestone 6: Implement the administrative dashboard, product management, categories, inventory, orders, customers, and settings.
+
+Milestone 7: Connect all frontend features to the real backend APIs and remove mock implementations that are no longer needed.
+
+Milestone 8: Run builds and tests, fix the problems found, and complete the README.
+
+Do not generate the entire application as a single giant source file. Implement small, understandable modules and maintain a working application throughout development.
+
+Keep a concise checklist of completed and remaining work. Continue through the milestones rather than stopping after writing a plan. If a genuine environmental blocker prevents progress, explain the exact issue and what needs to be done next.
+
+## 15. Beginner Teaching Requirements
+
+I want to learn while building this application, not merely receive generated code.
+
+After each milestone:
+1. Summarize what was implemented.
+2. Explain the most important files and why they exist.
+3. Explain how data flows between React, Express, Prisma, and PostgreSQL.
+4. Show how to run and verify the work.
+5. Explain any important bugs found and how they were fixed.
+6. Give me one small practice task related to the code.
+
+Use clear language and examples from the actual project.
+
+When encountering errors, identify the underlying cause instead of blindly changing files or repeatedly reinstalling packages.
+
+## Final Acceptance Criteria
+
+The project is complete only when the core customer shopping flow and core administrative workflows are implemented and verified as far as the local environment permits.
+
+The final application should let a customer register, sign in, browse real products from PostgreSQL, add items to a cart, complete a validated Cash on Delivery order, and view that order later.
+
+An administrator must be able to sign in securely, manage products and categories, adjust inventory, manage eligible order statuses, and see dashboard metrics derived from real database records.
+
+Start by inspecting the current workspace and checking the installed development tools. Then proceed through the implementation milestones. Do not overwrite unrelated work, expose secrets, reset an existing database, or deploy publicly. At the end, report the implemented features, files created, setup commands, test results, and any outstanding issues.
